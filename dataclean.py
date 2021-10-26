@@ -11,12 +11,25 @@ def create_roster_df(team, df):
 def weight_stats(player_df, stat_cols, pitcher_handedness='both'):
     """Helper function for weight_stats_df that does the actual weighting of each stat"""
     if pitcher_handedness == 'both':
-        filtered_player_df = player_df.groupby(['player_name', 'team', 'position', 'months_ago']).sum()
+        filtered_player_df = player_df.groupby(['player_name', 'team', 'position', 'game_date', 'months_ago']).sum()
+        col_tag = '_vs_total'
     else:
         filtered_player_df = player_df[player_df['pitcher_handedness'] == pitcher_handedness]
+        if pitcher_handedness == 'right':
+            col_tag = '_vs_rhp'
+        else:
+            col_tag = '_vs_lhp'
 
+    total_months = filtered_player_df.months_ago.sum()
+    filtered_player_df['weight_effect'] = ((total_months - filtered_player_df['months_ago']) / total_months)\
+        .astype(float)
 
+    player_dict = {}
+    for col in stat_cols:
+        filtered_player_df[col+'weighted'] = filtered_player_df[col] * filtered_player_df['weight_effect']
+        player_dict[col+col_tag] = [filtered_player_df[col+'weighted'].sum()]
 
+    return pd.DataFrame(player_dict)
 
 
 def weight_stats_df(team_df, stat_columns):
