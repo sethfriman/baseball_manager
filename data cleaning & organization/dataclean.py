@@ -4,7 +4,7 @@ import datetime
 
 
 def create_roster_df(team, df):
-    """Filers the larger dataframe down to a single team to make the data easier to work with"""
+    """Filters the larger dataframe down to a single team to make the data easier to work with"""
     return df[df['team'] == team]
 
 
