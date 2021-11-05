@@ -1,11 +1,15 @@
 # Player class representing player
+import pandas as pd
+
+# IMPORTANT:
+# NEED TO ADD IN POSITION FOR ALL AND HANDEDNESS (FOR PITCHER)
 
 class Player:
 
-    def __init__(self, name: str, position: str):
+    def __init__(self, name: str, team_name: str):
         """ Constructor for Player"""
         self.name = name
-        self.position = position
+        self.team_name = team_name
 
     def get_name(self):
         """
@@ -13,19 +17,19 @@ class Player:
         """
         return self.name
 
-    def get_position(self):
+    def get_team(self):
         """
         :return: player position
         """
-        return self.position
+        return self.team_name
 
 
 class Batter(Player):
 
-    def __init__(self,name: str, position: str, gen_stats: dict, lhp_stats: dict, rhp_stats: dict):
+    def __init__(self, name: str, team_name: str, gen_stats: pd.DataFrame, lhp_stats: pd.DataFrame, rhp_stats: pd.DataFrame):
         """ Constructor for Batter class - is a PLayer"""
         # inherits from player
-        super().__init__(self, name, position)
+        super().__init__(self, name, team_name)
 
         self.gen_stats = gen_stats
         self.rhp_stats = rhp_stats
@@ -52,11 +56,11 @@ class Batter(Player):
 
 class Pitcher(Player):
 
-    def __init__self(self, name: str, position: str, stats: dict, handedness: str):
+    def __init__self(self, name: str, team_name: str, stats: pd.DataFrame, handedness: str):
         """Constructor for Pitcher class - is a Player"""
 
         # inherits from Player
-        super().__init__(self, name, position)
+        super().__init__(self, name, team_name)
 
         self.stats = stats
         self.handedness = handedness
