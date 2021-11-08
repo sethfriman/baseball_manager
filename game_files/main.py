@@ -92,7 +92,13 @@ class GameManager:
 
         for i in away_roster:
             away_list.append(i.get_name())
-
+        
+      
+        home_spot = teams.index(home_team)
+        away_spot = teams.index(away_team)
+        home_team = list_cities[home_spot] + " " + list_team[home_spot]
+        away_team = list_cities[away_spot] + " " + list_team[away_spot]
+      
         print('Game Matchup:', home_team, '(home) vs', away_team, '(away)')
 
         print(home_team + " Players:")
