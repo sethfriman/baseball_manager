@@ -21,11 +21,11 @@ class Roster:
         """
         return self.abbreviation
 
-    # def get_city(self):
-    #     """
-    #     :return: city name
-    #     """
-    #     return self.city
+    def get_city(self):
+        """
+        :return: city name
+        """
+        return self.city
 
     def add_player(self, player):
         """ Add player to roster """
