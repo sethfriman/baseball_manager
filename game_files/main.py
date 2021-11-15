@@ -30,10 +30,10 @@ class GameManager:
             roster = Roster(list_team[i], list_cities[i], list_abbrv[i])
             list_roster_objects.append(roster)
 
-        lhp = pd.read_csv('../data directory/FanGraphs_lhp.csv')
-        rhp = pd.read_csv('../data directory/FanGraphs_rhp.csv')
-        total = pd.read_csv('../data directory/FanGraphs_total.csv')
-        pitcher_stats = pd.read_csv('../data directory/pitcher_data.csv')
+        lhp = pd.read_csv('../data_directory/FanGraphs_lhp.csv')
+        rhp = pd.read_csv('../data_directory/FanGraphs_rhp.csv')
+        total = pd.read_csv('../data_directory/FanGraphs_total.csv')
+        pitcher_stats = pd.read_csv('../data_directory/pitcher_data.csv')
 
         # creating player objects and adding to correct team's roster
         # all unique batters
