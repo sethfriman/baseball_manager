@@ -40,6 +40,12 @@ class GameManager:
         unique_batters_df = total.drop_duplicates(subset=["playerId"])
         list_player_id = unique_batters_df["playerId"].tolist()
 
+        positions = pd.read_csv("../data_directory/Positional_Data.csv")
+
+        # capitalize positions
+
+        positions['Position'] = positions['Position'].str.upper()
+
         # for each batter, create a batter object with all stats and team/name
         for i in list_player_id:
             player_total_stats = total[total["playerId"] == i]
@@ -47,7 +53,17 @@ class GameManager:
             rhp_stats = rhp[rhp["playerId"] == i]
             player_name = player_total_stats.iloc[0]["Name"]
             player_team = player_total_stats.iloc[-1]["Tm"]
-            player_obj = Batter(player_name, player_team, player_total_stats, lhp_stats, rhp_stats)
+            possible_players = positions[positions['Name'] == player_name]
+            correct_player = possible_players[possible_players['Team'] == player_team]
+
+            if correct_player.empty:
+                player_position = 'Unknown'
+                player_status = 'Unknown'
+            else:
+                player_position = correct_player.iloc[0]['Position']
+                player_status = correct_player.iloc[0]['Status']
+
+            player_obj = Batter(player_name, player_team, player_position, player_total_stats, lhp_stats, rhp_stats)
 
             # then add created player object to the roster of team that batter plays on
             idx = list_abbrv.index(player_team)
@@ -62,8 +78,17 @@ class GameManager:
             pitcher_ind_stats = pitcher_stats[pitcher_stats["playerId"] == p]
             pitcher_name = pitcher_ind_stats.iloc[0]["Name"]
             pitcher_team = pitcher_ind_stats.iloc[-1]["Tm"]
+            possible_pitchers = positions[positions['Name'] == pitcher_name]
+            correct_pitcher = possible_pitchers[possible_pitchers['Team'] == pitcher_team]
 
-            pitcher_obj = Pitcher(pitcher_name, pitcher_team, pitcher_ind_stats)
+            if correct_pitcher.empty:
+                pitcher_position = 'Unknown'
+                pitcher_status = 'Unknown'
+            else:
+                pitcher_position = correct_player.iloc[0]['Position']
+                pitcher_status = correct_player.iloc[0]['Status']
+
+            pitcher_obj = Pitcher(pitcher_name, pitcher_team, pitcher_position, pitcher_ind_stats)
 
             idx = list_abbrv.index(pitcher_team)
             roster_obj = list_roster_objects[idx]
@@ -88,10 +113,10 @@ class GameManager:
         away_list = []
 
         for i in home_roster:
-            home_list.append(i.get_name())
+            home_list.append((i.get_name(), i.get_position()))
 
         for i in away_roster:
-            away_list.append(i.get_name())
+            away_list.append((i.get_name(), i.get_position()))
         
       
         home_spot = teams.index(home_team)
@@ -107,6 +132,13 @@ class GameManager:
         print(away_list)
 
 
+
+
 if __name__ == "__main__":
     # will change this based on dataframes, but keep as list for now
     GameManager().matchup(list_abbrv)
+
+
+
+
+
