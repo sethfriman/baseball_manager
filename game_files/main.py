@@ -75,38 +75,31 @@ class GameManager:
         home_team = matchups[0]
         away_team = matchups[1]
 
+        home_spot = teams.index(home_team)
+        away_spot = teams.index(away_team)
+        home = list_cities[home_spot] + " " + list_team[home_spot]
+        away = list_cities[away_spot] + " " + list_team[away_spot]
+        #
+        print('Game Matchup:', home, '(home) vs', away, '(away)')
+        return home_team, away_team
 
-        ## TO DEMONSTRATE ON STATUS REPORT?:
+    def rosters(self, home, away):
 
-        hi = list_abbrv.index(home_team)
-        ai = list_abbrv.index(away_team)
+        hi = list_abbrv.index(home)
+        ai = list_abbrv.index(away)
 
         home_roster = list_roster_objects[hi].get_current_roster()
         away_roster = list_roster_objects[ai].get_current_roster()
 
-        home_list = []
-        away_list = []
-
-        for i in home_roster:
-            home_list.append(i.get_name())
-
-        for i in away_roster:
-            away_list.append(i.get_name())
-        
-      
-        home_spot = teams.index(home_team)
-        away_spot = teams.index(away_team)
-        home_team = list_cities[home_spot] + " " + list_team[home_spot]
-        away_team = list_cities[away_spot] + " " + list_team[away_spot]
-      
-        print('Game Matchup:', home_team, '(home) vs', away_team, '(away)')
-
-        print(home_team + " Players:")
-        print(home_list)
-        print(away_team + " Players:")
-        print(away_list)
+        print(home_roster)
+        print(away_roster)
+        return home_roster, away_roster
 
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
     # will change this based on dataframes, but keep as list for now
-    GameManager().matchup(list_abbrv)
+matchup_tuple = GameManager().matchup(list_abbrv)
+rosters = GameManager().rosters(matchup_tuple[0], matchup_tuple[1])
+
+home = rosters[0]
+away = rosters[1]
