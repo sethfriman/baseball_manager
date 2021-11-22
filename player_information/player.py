@@ -64,13 +64,14 @@ class Batter(Player):
 
 class Pitcher(Player):
 
-    def __init__(self, name: str, team_name: str, position: str, stats: pd.DataFrame):
+    def __init__(self, name: str, team_name: str, position: str, hand: str, stats: pd.DataFrame):
         """Constructor for Pitcher class - is a Player"""
 
         # inherits from Player
         super().__init__(name, team_name, position)
 
         self.stats = stats
+        self.hand = hand
 
     def get_stats(self):
         """
@@ -78,11 +79,11 @@ class Pitcher(Player):
         """
         return self.stats
 
-    #def get_arm(self):
+    def get_arm(self):
         """
         :return: pitcher throwing arm
         """
-        #return self.handedness
+        return self.hand
 
 
 

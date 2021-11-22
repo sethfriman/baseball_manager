@@ -33,7 +33,8 @@ class GameManager:
         lhp = pd.read_csv('../data_directory/FanGraphs_lhp.csv')
         rhp = pd.read_csv('../data_directory/FanGraphs_rhp.csv')
         total = pd.read_csv('../data_directory/FanGraphs_total.csv')
-        pitcher_stats = pd.read_csv('../data_directory/pitcher_data.csv')
+        stats_lhp = pd.read_csv('../data_directory/lhp_stats.csv')
+        stats_rhp = pd.read_csv('../data_directory/rhp_stats.csv')
 
         # creating player objects and adding to correct team's roster
         # all unique batters
@@ -70,16 +71,17 @@ class GameManager:
             roster_obj = list_roster_objects[idx]
             roster_obj.add_player(player_obj)
 
-        # doing same for pitchers
-        unique_pitchers = pitcher_stats.drop_duplicates(subset=["playerId"])
+        # doing same for left handed pitchers
+        unique_pitchers = stats_lhp.drop_duplicates(subset=["playerId"])
         list_pitcher_id = unique_pitchers["playerId"].tolist()
 
         for p in list_pitcher_id:
-            pitcher_ind_stats = pitcher_stats[pitcher_stats["playerId"] == p]
+            pitcher_ind_stats = stats_lhp[stats_lhp["playerId"] == p]
             pitcher_name = pitcher_ind_stats.iloc[0]["Name"]
             pitcher_team = pitcher_ind_stats.iloc[-1]["Tm"]
             possible_pitchers = positions[positions['Name'] == pitcher_name]
             correct_pitcher = possible_pitchers[possible_pitchers['Team'] == pitcher_team]
+            pitcher_hand = 'Left'
 
             if correct_pitcher.empty:
                 pitcher_position = 'Unknown'
@@ -88,7 +90,32 @@ class GameManager:
                 pitcher_position = correct_player.iloc[0]['Position']
                 pitcher_status = correct_player.iloc[0]['Status']
 
-            pitcher_obj = Pitcher(pitcher_name, pitcher_team, pitcher_position, pitcher_ind_stats)
+            pitcher_obj = Pitcher(pitcher_name, pitcher_team, pitcher_position, pitcher_hand, pitcher_ind_stats)
+
+            idx = list_abbrv.index(pitcher_team)
+            roster_obj = list_roster_objects[idx]
+            roster_obj.add_player(pitcher_obj)
+
+        # doing same for left handed pitchers
+        unique_pitchers_r = stats_rhp.drop_duplicates(subset=["playerId"])
+        list_pitcher_id_r = unique_pitchers_r["playerId"].tolist()
+
+        for p in list_pitcher_id_r:
+            pitcher_ind_stats = stats_rhp[stats_rhp["playerId"] == p]
+            pitcher_name = pitcher_ind_stats.iloc[0]["Name"]
+            pitcher_team = pitcher_ind_stats.iloc[-1]["Tm"]
+            possible_pitchers = positions[positions['Name'] == pitcher_name]
+            correct_pitcher = possible_pitchers[possible_pitchers['Team'] == pitcher_team]
+            pitcher_hand = 'Right'
+
+            if correct_pitcher.empty:
+                pitcher_position = 'Unknown'
+                pitcher_status = 'Unknown'
+            else:
+                pitcher_position = correct_player.iloc[0]['Position']
+                pitcher_status = correct_player.iloc[0]['Status']
+
+            pitcher_obj = Pitcher(pitcher_name, pitcher_team, pitcher_position, pitcher_hand, pitcher_ind_stats)
 
             idx = list_abbrv.index(pitcher_team)
             roster_obj = list_roster_objects[idx]
@@ -105,7 +132,7 @@ class GameManager:
         home = list_cities[home_spot] + " " + list_team[home_spot]
         away = list_cities[away_spot] + " " + list_team[away_spot]
         #
-        #print('Game Matchup:', home, '(home) vs', away, '(away)')
+        print('Game Matchup:', home, '(home) vs', away, '(away)')
         return home_team, away_team
 
     def rosters(self, home, away):
@@ -115,13 +142,10 @@ class GameManager:
 
         home_roster = list_roster_objects[hi].get_current_roster()
         away_roster = list_roster_objects[ai].get_current_roster()
-
-        #print(home_roster)
-        #print(away_roster)
         return home_roster, away_roster
 
 
-#if __name__ == "__main__":
+# if __name__ == "__main__":
     # will change this based on dataframes, but keep as list for now
 matchup_tuple = GameManager().matchup(list_abbrv)
 rosters = GameManager().rosters(matchup_tuple[0], matchup_tuple[1])
