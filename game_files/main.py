@@ -157,11 +157,6 @@ rosters = init_players.rosters(matchup_tuple[0], matchup_tuple[1])
 home = rosters[0]
 away = rosters[1]
 
-home_names = pd.Series([player.name for player in home])
-print(home_names.value_counts())
-
-sys.exit(0)
-
 home_df = pd.DataFrame()
 away_df = pd.DataFrame()
 
