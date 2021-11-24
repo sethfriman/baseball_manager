@@ -151,7 +151,11 @@ class GameManager:
 
 # if __name__ == "__main__":
     # will change this based on dataframes, but keep as list for now
+
+# Initialize all of the rosters with player stats
 init_players = GameManager()
+
+# Generate 2 random teams as a game and find their roster
 matchup_tuple = init_players.matchup(list_abbrv)
 rosters = init_players.rosters(matchup_tuple[0], matchup_tuple[1])
 
@@ -161,9 +165,16 @@ away = rosters[1]
 home_df = pd.DataFrame()
 away_df = pd.DataFrame()
 
+"""PLACEHOLDER FOR ADDING IN PITCHER HANDEDNESS
+
+   NEED TO CHANGE 'get_all_stats()' below to reflect handedness when Pitcher is generated"""
+
+# Add all batters from each team to a batters dataframe containing their batting stats
 for player in home:
     try:
         player_df = player.get_all_stats()
+        print(player.get_position())
+        player_df['Position'] = player.get_position()
         home_df = home_df.append(player_df, ignore_index=True)
     except AttributeError as e:
         pass
@@ -171,26 +182,32 @@ for player in home:
 for player in away:
     try:
         player_df = player.get_all_stats()
+        player_df['Position'] = player.get_position()
         away_df = away_df.append(player_df, ignore_index=True)
     except AttributeError as e:
         pass
 
-stat_cols = ['Name', 'Tm', 'Date', 'G',
+# The list of columns that will be either preserved or weighted in the final DataFrame
+stat_cols = ['Name', 'Tm', 'Date', 'Position', 'G',
              'PA', 'AB', 'H', '1B', '2B', '3B',
              'HR', 'R', 'RBI', 'BB', 'IBB', 'SO',
              'HBP', 'SF', 'SH', 'GDP', 'SB', 'CS']
 
+# Weight the batting stats based on recency of games
 home_weighted = dc.weight_stats_df(home_df, stat_cols)
 home_weighted['Tm'] = matchup_tuple[0]
 
 away_weighted = dc.weight_stats_df(away_df, stat_cols)
 away_weighted['Tm'] = matchup_tuple[1]
 
+# Filter batters with less than 10 weighted at bats to reduce '1-game-wonders' type of results
 home_weighted = home_weighted[home_weighted['AB_vs_total'] > 10]
 away_weighted = away_weighted[away_weighted['AB_vs_total'] > 10]
 
+# Add the new aggregate stats to the DataFrame from the weighted stats
 home_weighted = gen_stat(home_weighted)
 away_weighted = gen_stat(away_weighted)
 
-print(home_weighted.sort_values('weighted_runs_created', ascending=False))
-print(away_weighted.sort_values('weighted_runs_created', ascending=False))
+# Print the matchup, organizing the data by weighted_runs_created_per_game
+print(home_weighted.sort_values('weighted_runs_created_per_game', ascending=False))
+print(away_weighted.sort_values('weighted_runs_created_per_game', ascending=False))
