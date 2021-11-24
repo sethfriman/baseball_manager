@@ -150,11 +150,17 @@ class GameManager:
 
 # if __name__ == "__main__":
     # will change this based on dataframes, but keep as list for now
-matchup_tuple = GameManager().matchup(list_abbrv)
-rosters = GameManager().rosters(matchup_tuple[0], matchup_tuple[1])
+init_players = GameManager()
+matchup_tuple = init_players.matchup(list_abbrv)
+rosters = init_players.rosters(matchup_tuple[0], matchup_tuple[1])
 
 home = rosters[0]
 away = rosters[1]
+
+home_names = pd.Series([player.name for player in home])
+print(home_names.value_counts())
+
+sys.exit(0)
 
 home_df = pd.DataFrame()
 away_df = pd.DataFrame()
