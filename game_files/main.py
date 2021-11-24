@@ -5,6 +5,7 @@ sys.path.append('../')
 from player_information.roster import Roster
 from player_information.player import Player, Batter, Pitcher
 import data_cleaning_and_organization.dataclean as dc
+from data_cleaning_and_organization.gen_stats import gen_stat
 
 list_abbrv = ['ARI', 'ATL', 'BAL', 'BOS', 'CHW', 'CHC', 'CIN', 'CLE', 'COL', 'DET', 'HOU', 'KCR', 'LAA', 'LAD',
                       'MIA', 'MIL', 'MIN', 'NYY', 'NYM', 'OAK', 'PHI', 'PIT', 'SDP', 'SFG', 'SEA', 'STL', 'TBR', 'TEX',
@@ -174,7 +175,7 @@ for player in away:
     except AttributeError as e:
         pass
 
-stat_cols = ['Name', 'Tm', 'Date',
+stat_cols = ['Name', 'Tm', 'Date', 'G',
              'PA', 'AB', 'H', '1B', '2B', '3B',
              'HR', 'R', 'RBI', 'BB', 'IBB', 'SO',
              'HBP', 'SF', 'SH', 'GDP', 'SB', 'CS']
@@ -188,8 +189,8 @@ away_weighted['Tm'] = matchup_tuple[1]
 home_weighted = home_weighted[home_weighted['AB_vs_total'] > 10]
 away_weighted = away_weighted[away_weighted['AB_vs_total'] > 10]
 
-home_weighted['weighted_AVG'] = home_weighted['H_vs_total'] / home_weighted['AB_vs_total']
-away_weighted['weighted_AVG'] = away_weighted['H_vs_total'] / away_weighted['AB_vs_total']
+home_weighted = gen_stat(home_weighted)
+away_weighted = gen_stat(away_weighted)
 
-print(home_weighted)
-print(away_weighted)
+print(home_weighted.sort_values('weighted_runs_created', ascending=False))
+print(away_weighted.sort_values('weighted_runs_created', ascending=False))
