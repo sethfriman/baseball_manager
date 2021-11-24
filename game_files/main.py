@@ -1,7 +1,10 @@
 import random
 import pandas as pd
+import sys
+sys.path.append('../')
 from player_information.roster import Roster
 from player_information.player import Player, Batter, Pitcher
+import data_cleaning_and_organization.dataclean as dc
 
 list_abbrv = ['ARI', 'ATL', 'BAL', 'BOS', 'CHW', 'CHC', 'CIN', 'CLE', 'COL', 'DET', 'HOU', 'KCR', 'LAA', 'LAD',
                       'MIA', 'MIL', 'MIN', 'NYY', 'NYM', 'OAK', 'PHI', 'PIT', 'SDP', 'SFG', 'SEA', 'STL', 'TBR', 'TEX',
@@ -147,8 +150,46 @@ class GameManager:
 
 # if __name__ == "__main__":
     # will change this based on dataframes, but keep as list for now
-matchup_tuple = GameManager().matchup(list_abbrv)
-rosters = GameManager().rosters(matchup_tuple[0], matchup_tuple[1])
+init_players = GameManager()
+matchup_tuple = init_players.matchup(list_abbrv)
+rosters = init_players.rosters(matchup_tuple[0], matchup_tuple[1])
 
 home = rosters[0]
 away = rosters[1]
+
+home_df = pd.DataFrame()
+away_df = pd.DataFrame()
+
+for player in home:
+    try:
+        player_df = player.get_all_stats()
+        home_df = home_df.append(player_df, ignore_index=True)
+    except AttributeError as e:
+        pass
+
+for player in away:
+    try:
+        player_df = player.get_all_stats()
+        away_df = away_df.append(player_df, ignore_index=True)
+    except AttributeError as e:
+        pass
+
+stat_cols = ['Name', 'Tm', 'Date',
+             'PA', 'AB', 'H', '1B', '2B', '3B',
+             'HR', 'R', 'RBI', 'BB', 'IBB', 'SO',
+             'HBP', 'SF', 'SH', 'GDP', 'SB', 'CS']
+
+home_weighted = dc.weight_stats_df(home_df, stat_cols)
+home_weighted['Tm'] = matchup_tuple[0]
+
+away_weighted = dc.weight_stats_df(away_df, stat_cols)
+away_weighted['Tm'] = matchup_tuple[1]
+
+home_weighted = home_weighted[home_weighted['AB_vs_total'] > 10]
+away_weighted = away_weighted[away_weighted['AB_vs_total'] > 10]
+
+home_weighted['weighted_AVG'] = home_weighted['H_vs_total'] / home_weighted['AB_vs_total']
+away_weighted['weighted_AVG'] = away_weighted['H_vs_total'] / away_weighted['AB_vs_total']
+
+print(home_weighted)
+print(away_weighted)
