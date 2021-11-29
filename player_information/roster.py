@@ -1,4 +1,26 @@
 # Roster class representing roster for each team
+import random
+
+
+def get_pitcher(roster):  # run for home and away
+
+    pitchers = []
+    cleaned_p = []
+    for x in roster:
+        player = x.__dict__
+        for a, b in player.items():
+            if a == 'position' and b == 'P':
+                pitchers.append(x)
+
+    for p in pitchers:
+        pitcher = p.__dict__
+        for a, b in pitcher.items():
+            if a == 'hand':
+                if b == 'Right' or b == 'Left':
+                    cleaned_p.append(p)
+    pitcher_choice = random.choice(cleaned_p)
+    return pitcher_choice
+
 
 class Roster:
 
@@ -36,26 +58,3 @@ class Roster:
         :return: current roster
         """
         return self.roster
-    
-     def get_pitcher(self): #run for home and away
-
-        pitchers = []
-        cleaned_p = []
-        for x in self.roster:
-            player = x.__dict__
-            for a, b in player.items():
-                if a == 'position' and b == 'P':
-                    pitchers.append(x)
-
-        for p in pitchers:
-            pitcher = p.__dict__
-            for a, b in pitcher.items():
-                if a == 'hand':
-                    if b == 'Right' or b == 'Left':
-                        cleaned_p.append(pitcher)
-                        #print(cleaned_p)
-        pitcher_choice = random.choice(cleaned_p)
-        pitcher_info = pitcher_choice
-        for n, p in pitcher_info.items():
-            if n == 'name':
-                return pitcher_info
