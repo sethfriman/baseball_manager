@@ -3,6 +3,7 @@ import pandas as pd
 import sys
 sys.path.append('../')
 from player_information.roster import Roster
+from player_information.roster import get_pitcher
 from player_information.player import Player, Batter, Pitcher
 import data_cleaning_and_organization.dataclean as dc
 from data_cleaning_and_organization.gen_stats import gen_stat
@@ -162,6 +163,21 @@ rosters = init_players.rosters(matchup_tuple[0], matchup_tuple[1])
 home = rosters[0]
 away = rosters[1]
 
+home_pitcher = get_pitcher(home)
+away_pitcher = get_pitcher(away)
+print(matchup_tuple[0] + ' pitcher: ' + home_pitcher.get_name() + ', Hand: ' + home_pitcher.get_arm())
+print(matchup_tuple[1] + ' pitcher: ' + away_pitcher.get_name() + ', Hand: ' + away_pitcher.get_arm())
+
+if home_pitcher.get_arm() == 'Left':
+    home_pitcher_hand = 'lhp'
+else:
+    home_pitcher_hand = 'rhp'
+
+if away_pitcher.get_arm() == 'Left':
+    away_pitcher_hand = 'lhp'
+else:
+    away_pitcher_hand = 'rhp'
+
 home_df = pd.DataFrame()
 away_df = pd.DataFrame()
 
@@ -172,8 +188,12 @@ away_df = pd.DataFrame()
 # Add all batters from each team to a batters dataframe containing their batting stats
 for player in home:
     try:
-        player_df = player.get_all_stats()
-        print(player.get_position())
+        if away_pitcher_hand == 'rhp':
+            player_df = player.get_rhp_stats()
+        elif away_pitcher_hand == 'lhp':
+            player_df = player.get_lhp_stats()
+        else:
+            player_df = player.get_hall_stats()
         player_df['Position'] = player.get_position()
         home_df = home_df.append(player_df, ignore_index=True)
     except AttributeError as e:
@@ -181,7 +201,12 @@ for player in home:
 
 for player in away:
     try:
-        player_df = player.get_all_stats()
+        if home_pitcher_hand == 'rhp':
+            player_df = player.get_rhp_stats()
+        elif home_pitcher_hand == 'lhp':
+            player_df = player.get_lhp_stats()
+        else:
+            player_df = player.get_hall_stats()
         player_df['Position'] = player.get_position()
         away_df = away_df.append(player_df, ignore_index=True)
     except AttributeError as e:
@@ -201,13 +226,23 @@ away_weighted = dc.weight_stats_df(away_df, stat_cols)
 away_weighted['Tm'] = matchup_tuple[1]
 
 # Filter batters with less than 10 weighted at bats to reduce '1-game-wonders' type of results
-home_weighted = home_weighted[home_weighted['AB_vs_total'] > 10]
-away_weighted = away_weighted[away_weighted['AB_vs_total'] > 10]
+#home_weighted = home_weighted[home_weighted['AB_vs_total'] > 10]
+#away_weighted = away_weighted[away_weighted['AB_vs_total'] > 10]
 
 # Add the new aggregate stats to the DataFrame from the weighted stats
-home_weighted = gen_stat(home_weighted)
-away_weighted = gen_stat(away_weighted)
+home_weighted = gen_stat(home_weighted, p_hand='lhp')
+away_weighted = gen_stat(away_weighted, p_hand='lhp')
+
+home_best_9 = home_weighted.sort_values('weighted_runs_created_per_game', ascending=False)[:9].reset_index(drop=True)
+away_best_9 = away_weighted.sort_values('weighted_runs_created_per_game', ascending=False)[:9].reset_index(drop=True)
+home_best_9 = home_best_9[['Name', 'Position', 'weighted_runs_created_per_game']]
+away_best_9 = away_best_9[['Name', 'Position', 'weighted_runs_created_per_game']]
 
 # Print the matchup, organizing the data by weighted_runs_created_per_game
-print(home_weighted.sort_values('weighted_runs_created_per_game', ascending=False))
-print(away_weighted.sort_values('weighted_runs_created_per_game', ascending=False))
+print(matchup_tuple[0] + ' lineup based on ' + away_pitcher.get_arm() + ' Handed pitcher:')
+print(home_best_9)
+print('Total Expected Runs: ', round(home_best_9.weighted_runs_created_per_game.sum(), 2))
+print()
+print(matchup_tuple[1] + ' lineup based on ' + home_pitcher.get_arm() + ' Handed pitcher:')
+print(away_best_9)
+print('Total Expected Runs: ', round(away_best_9.weighted_runs_created_per_game.sum(), 2))
