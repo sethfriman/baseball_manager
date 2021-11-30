@@ -1,12 +1,18 @@
 import random
+
+import matplotlib.pyplot as plt
 import pandas as pd
 import sys
+from lineup import top9Lineup
+import seaborn as sns
+
 sys.path.append('../')
 from player_information.roster import Roster
 from player_information.roster import get_pitcher
 from player_information.player import Player, Batter, Pitcher
 import data_cleaning_and_organization.dataclean as dc
 from data_cleaning_and_organization.gen_stats import gen_stat
+
 
 list_abbrv = ['ARI', 'ATL', 'BAL', 'BOS', 'CHW', 'CHC', 'CIN', 'CLE', 'COL', 'DET', 'HOU', 'KCR', 'LAA', 'LAD',
                       'MIA', 'MIL', 'MIN', 'NYY', 'NYM', 'OAK', 'PHI', 'PIT', 'SDP', 'SFG', 'SEA', 'STL', 'TBR', 'TEX',
@@ -226,23 +232,23 @@ away_weighted = dc.weight_stats_df(away_df, stat_cols)
 away_weighted['Tm'] = matchup_tuple[1]
 
 # Filter batters with less than 10 weighted at bats to reduce '1-game-wonders' type of results
-#home_weighted = home_weighted[home_weighted['AB_vs_total'] > 10]
-#away_weighted = away_weighted[away_weighted['AB_vs_total'] > 10]
+home_weighted = home_weighted[home_weighted['AB_vs_total'] > 10]
+away_weighted = away_weighted[away_weighted['AB_vs_total'] > 10]
 
 # Add the new aggregate stats to the DataFrame from the weighted stats
-home_weighted = gen_stat(home_weighted, p_hand='lhp')
-away_weighted = gen_stat(away_weighted, p_hand='lhp')
+home_weighted = gen_stat(home_weighted, p_hand=away_pitcher_hand)
+away_weighted = gen_stat(away_weighted, p_hand=home_pitcher_hand)
 
-home_best_9 = home_weighted.sort_values('weighted_runs_created_per_game', ascending=False)[:9].reset_index(drop=True)
-away_best_9 = away_weighted.sort_values('weighted_runs_created_per_game', ascending=False)[:9].reset_index(drop=True)
-home_best_9 = home_best_9[['Name', 'Position', 'weighted_runs_created_per_game']]
-away_best_9 = away_best_9[['Name', 'Position', 'weighted_runs_created_per_game']]
+# LINEUPS and RESULTS
+results_df = pd.DataFrame(columns=['Lineup Type', 'Expected Runs', 'Location'])
 
-# Print the matchup, organizing the data by weighted_runs_created_per_game
-print(matchup_tuple[0] + ' lineup based on ' + away_pitcher.get_arm() + ' Handed pitcher:')
-print(home_best_9)
-print('Total Expected Runs: ', round(home_best_9.weighted_runs_created_per_game.sum(), 2))
-print()
-print(matchup_tuple[1] + ' lineup based on ' + home_pitcher.get_arm() + ' Handed pitcher:')
-print(away_best_9)
-print('Total Expected Runs: ', round(away_best_9.weighted_runs_created_per_game.sum(), 2))
+top9_h, top9_a = top9Lineup(home_weighted, away_weighted,
+                            home_pitcher.get_arm(), away_pitcher.get_arm(),
+                            matchup_tuple[0], matchup_tuple[1])
+results_df = results_df.append({'Lineup Type': 'Top9', 'Expected Runs': top9_h, 'Location': 'Home'}, ignore_index=True)
+results_df = results_df.append({'Lineup Type': 'Top9', 'Expected Runs': top9_a, 'Location': 'Away'}, ignore_index=True)
+
+fig, ax = plt.subplots()
+sns.barplot(x='Lineup Type', y='Expected Runs', data=results_df, hue='Location', ax=ax)
+fig.savefig('../results_visuals/' + matchup_tuple[1] + '_' + away_pitcher_hand + '_at_' +
+            matchup_tuple[0] + '_' + away_pitcher_hand + '.png')
