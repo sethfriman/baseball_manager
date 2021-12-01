@@ -12,6 +12,7 @@ from player_information.roster import get_pitcher
 from player_information.player import Player, Batter, Pitcher
 import data_cleaning_and_organization.dataclean as dc
 from data_cleaning_and_organization.gen_stats import gen_stat
+from results_visuals.player_comp import player_comp
 
 
 list_abbrv = ['ARI', 'ATL', 'BAL', 'BOS', 'CHW', 'CHC', 'CIN', 'CLE', 'COL', 'DET', 'HOU', 'KCR', 'LAA', 'LAD',
@@ -30,6 +31,94 @@ list_team = ["Diamondbacks", "Braves", "Orioles", "Red Sox", "White Sox", "Cubs"
                      "Giants", "Mariners", "Cardinals", "Rays", "Rangers", "Blue Jays", "Nationals"]
 
 list_roster_objects = []
+
+
+def genMatchup(home=None, away=None, h_p_hand=None, a_p_hand=None):
+    matchup_tuple = init_players.matchup(list_abbrv, home, away)
+    rosters = init_players.rosters(matchup_tuple[0], matchup_tuple[1])
+
+    home_name = matchup_tuple[0]
+    away_name = matchup_tuple[1]
+
+    home = rosters[0]
+    away = rosters[1]
+
+    if h_p_hand is None:
+        home_pitcher = get_pitcher(home)
+        h_p_hand = home_pitcher.get_arm()
+        print(matchup_tuple[0] + ' pitcher: ' + home_pitcher.get_name() + ', Hand: ' + home_pitcher.get_arm())
+    else:
+        print(matchup_tuple[0] + ' pitcher: ' + h_p_hand + 'y, Hand: ' + h_p_hand)
+
+    if a_p_hand is None:
+        away_pitcher = get_pitcher(away)
+        a_p_hand = away_pitcher.get_arm()
+        print(matchup_tuple[1] + ' pitcher: ' + away_pitcher.get_name() + ', Hand: ' + away_pitcher.get_arm())
+    else:
+        print(matchup_tuple[1] + ' pitcher: ' + a_p_hand + 'y, Hand: ' + a_p_hand)
+
+    if h_p_hand == 'Left':
+        home_pitcher_hand = 'lhp'
+    else:
+        home_pitcher_hand = 'rhp'
+
+    if a_p_hand == 'Left':
+        away_pitcher_hand = 'lhp'
+    else:
+        away_pitcher_hand = 'rhp'
+
+    home_df = pd.DataFrame()
+    away_df = pd.DataFrame()
+
+    # Add all batters from each team to a batters dataframe containing their batting stats
+    for player in home:
+        try:
+            if away_pitcher_hand == 'rhp':
+                player_df = player.get_rhp_stats()
+            elif away_pitcher_hand == 'lhp':
+                player_df = player.get_lhp_stats()
+            else:
+                player_df = player.get_hall_stats()
+            player_df['Position'] = player.get_position()
+            home_df = home_df.append(player_df, ignore_index=True)
+        except AttributeError as e:
+            pass
+
+    for player in away:
+        try:
+            if home_pitcher_hand == 'rhp':
+                player_df = player.get_rhp_stats()
+            elif home_pitcher_hand == 'lhp':
+                player_df = player.get_lhp_stats()
+            else:
+                player_df = player.get_hall_stats()
+            player_df['Position'] = player.get_position()
+            away_df = away_df.append(player_df, ignore_index=True)
+        except AttributeError as e:
+            pass
+
+    # The list of columns that will be either preserved or weighted in the final DataFrame
+    stat_cols = ['Name', 'Tm', 'Date', 'Position', 'G',
+                 'PA', 'AB', 'H', '1B', '2B', '3B',
+                 'HR', 'R', 'RBI', 'BB', 'IBB', 'SO',
+                 'HBP', 'SF', 'SH', 'GDP', 'SB', 'CS']
+
+    # Weight the batting stats based on recency of games
+    home_weighted = dc.weight_stats_df(home_df, stat_cols)
+    home_weighted['Tm'] = matchup_tuple[0]
+
+    away_weighted = dc.weight_stats_df(away_df, stat_cols)
+    away_weighted['Tm'] = matchup_tuple[1]
+
+    # Filter batters with less than 10 weighted at bats to reduce '1-game-wonders' type of results
+    home_weighted = home_weighted[home_weighted['AB_vs_total'] > 10]
+    away_weighted = away_weighted[away_weighted['AB_vs_total'] > 10]
+
+    # Add the new aggregate stats to the DataFrame from the weighted stats
+    home_weighted = gen_stat(home_weighted, p_hand=away_pitcher_hand)
+    away_weighted = gen_stat(away_weighted, p_hand=home_pitcher_hand)
+
+    return home_weighted, away_weighted, home_name, away_name, h_p_hand, a_p_hand
 
 
 class GameManager:
@@ -132,11 +221,29 @@ class GameManager:
             roster_obj = list_roster_objects[idx]
             roster_obj.add_player(pitcher_obj)
 
-    def matchup(self, teams):
+    def matchup(self, teams, home, away):
         # .sample() does not allow for there to be repeating elements chosen
-        matchups = random.sample(teams, 2)
-        home_team = matchups[0]
-        away_team = matchups[1]
+        if (home is None) & (away is None):
+            matchups = random.sample(teams, 2)
+            home_team = matchups[0]
+            away_team = matchups[1]
+        elif home is None:
+            new_team = False
+            while not new_team:
+                matchups = random.sample(teams, 1)
+                new_team = matchups[0] != away
+            home_team = matchups[0]
+            away_team = away
+        elif away is None:
+            new_team = False
+            while not new_team:
+                matchups = random.sample(teams, 1)
+                new_team = matchups[0] != home
+            home_team = home
+            away_team = matchups[0]
+        else:
+            home_team = home
+            away_team = away
 
         home_spot = teams.index(home_team)
         away_spot = teams.index(away_team)
@@ -159,96 +266,39 @@ class GameManager:
 # if __name__ == "__main__":
     # will change this based on dataframes, but keep as list for now
 
+# Initial Visualizations using raw dataframes
+player_comp(['Anthony Rizzo', 'Kyle Seager', 'Willson Contreras'], p_hand='Right', start_date='2021-09-01')
+
 # Initialize all of the rosters with player stats
 init_players = GameManager()
 
-# Generate 2 random teams as a game and find their roster
-matchup_tuple = init_players.matchup(list_abbrv)
-rosters = init_players.rosters(matchup_tuple[0], matchup_tuple[1])
-
-home = rosters[0]
-away = rosters[1]
-
-home_pitcher = get_pitcher(home)
-away_pitcher = get_pitcher(away)
-print(matchup_tuple[0] + ' pitcher: ' + home_pitcher.get_name() + ', Hand: ' + home_pitcher.get_arm())
-print(matchup_tuple[1] + ' pitcher: ' + away_pitcher.get_name() + ', Hand: ' + away_pitcher.get_arm())
-
-if home_pitcher.get_arm() == 'Left':
-    home_pitcher_hand = 'lhp'
-else:
-    home_pitcher_hand = 'rhp'
-
-if away_pitcher.get_arm() == 'Left':
-    away_pitcher_hand = 'lhp'
-else:
-    away_pitcher_hand = 'rhp'
-
-home_df = pd.DataFrame()
-away_df = pd.DataFrame()
-
-"""PLACEHOLDER FOR ADDING IN PITCHER HANDEDNESS
-
-   NEED TO CHANGE 'get_all_stats()' below to reflect handedness when Pitcher is generated"""
-
-# Add all batters from each team to a batters dataframe containing their batting stats
-for player in home:
-    try:
-        if away_pitcher_hand == 'rhp':
-            player_df = player.get_rhp_stats()
-        elif away_pitcher_hand == 'lhp':
-            player_df = player.get_lhp_stats()
-        else:
-            player_df = player.get_hall_stats()
-        player_df['Position'] = player.get_position()
-        home_df = home_df.append(player_df, ignore_index=True)
-    except AttributeError as e:
-        pass
-
-for player in away:
-    try:
-        if home_pitcher_hand == 'rhp':
-            player_df = player.get_rhp_stats()
-        elif home_pitcher_hand == 'lhp':
-            player_df = player.get_lhp_stats()
-        else:
-            player_df = player.get_hall_stats()
-        player_df['Position'] = player.get_position()
-        away_df = away_df.append(player_df, ignore_index=True)
-    except AttributeError as e:
-        pass
-
-# The list of columns that will be either preserved or weighted in the final DataFrame
-stat_cols = ['Name', 'Tm', 'Date', 'Position', 'G',
-             'PA', 'AB', 'H', '1B', '2B', '3B',
-             'HR', 'R', 'RBI', 'BB', 'IBB', 'SO',
-             'HBP', 'SF', 'SH', 'GDP', 'SB', 'CS']
-
-# Weight the batting stats based on recency of games
-home_weighted = dc.weight_stats_df(home_df, stat_cols)
-home_weighted['Tm'] = matchup_tuple[0]
-
-away_weighted = dc.weight_stats_df(away_df, stat_cols)
-away_weighted['Tm'] = matchup_tuple[1]
-
-# Filter batters with less than 10 weighted at bats to reduce '1-game-wonders' type of results
-home_weighted = home_weighted[home_weighted['AB_vs_total'] > 10]
-away_weighted = away_weighted[away_weighted['AB_vs_total'] > 10]
-
-# Add the new aggregate stats to the DataFrame from the weighted stats
-home_weighted = gen_stat(home_weighted, p_hand=away_pitcher_hand)
-away_weighted = gen_stat(away_weighted, p_hand=home_pitcher_hand)
+# Change the parameters here to customize the matchup
+# home/away: abbreviations for teams
+# h_p_hand/a_p_hand: 'Left' or 'Right'
+# Unspecified values are chosen randomly
+home_weighted, away_weighted, home, away, h_p_hand, a_p_hand = genMatchup()
 
 # LINEUPS and RESULTS
 results_df = pd.DataFrame(columns=['Lineup Type', 'Expected Runs', 'Location'])
 
 top9_h, top9_a = top9Lineup(home_weighted, away_weighted,
-                            home_pitcher.get_arm(), away_pitcher.get_arm(),
-                            matchup_tuple[0], matchup_tuple[1])
+                            h_p_hand, a_p_hand,
+                            home, away)
+if h_p_hand == 'Left':
+    home_pitcher_hand = 'lhp'
+else:
+    home_pitcher_hand = 'rhp'
+
+if a_p_hand == 'Left':
+    away_pitcher_hand = 'lhp'
+else:
+    away_pitcher_hand = 'rhp'
+
 results_df = results_df.append({'Lineup Type': 'Top9', 'Expected Runs': top9_h, 'Location': 'Home'}, ignore_index=True)
 results_df = results_df.append({'Lineup Type': 'Top9', 'Expected Runs': top9_a, 'Location': 'Away'}, ignore_index=True)
 
 fig, ax = plt.subplots()
 sns.barplot(x='Lineup Type', y='Expected Runs', data=results_df, hue='Location', ax=ax)
-fig.savefig('../results_visuals/' + matchup_tuple[1] + '_' + away_pitcher_hand + '_at_' +
-            matchup_tuple[0] + '_' + away_pitcher_hand + '.png')
+ax.set_title('Expected Runs Lineup Comparison Chart')
+fig.savefig('../results_visuals/' + away + '_' + away_pitcher_hand + '_at_' +
+            home + '_' + away_pitcher_hand + '.png')
