@@ -3,7 +3,7 @@ import random
 import matplotlib.pyplot as plt
 import pandas as pd
 import sys
-from lineup import top9Lineup
+from top9_lineup import top9Lineup
 import seaborn as sns
 
 sys.path.append('../')
