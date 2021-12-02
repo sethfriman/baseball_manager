@@ -13,14 +13,27 @@ away_df = pd.DataFrame()
 home_pitcher = get_pitcher(home)
 h_p_hand = home_pitcher.get_arm()
 
+if h_p_hand == 'Left':
+    home_pitcher_hand = 'lhp'
+else:
+    home_pitcher_hand = 'rhp'
+
+if a_p_hand == 'Left':
+    away_pitcher_hand = 'lhp'
+else:
+    away_pitcher_hand = 'rhp'
+
+
+
+
 home_random_9 = []
 away_random_9 = []
 #def random9Lineup(home_df, away_df, home_a, away_a, home, away):
 for player in home:
     try:
-        if away_pitcher == 'rhp':
+        if away_pitcher_hand == 'rhp':
             player_df = player.get_lhp_stats()
-        elif away_pitcher == 'lhp':
+        elif away_pitcher_hand == 'lhp':
             player_df = player.get_rhp_stats()
         #else:
             #player_df = player.get_hall_stats()
@@ -31,9 +44,9 @@ for player in home:
 
 for player in away:
     try:
-        if home_pitcher == 'rhp':
+        if home_pitcher_hand == 'rhp':
             player_df = player.get_lhp_stats()
-        elif home_pitcher == 'lhp':
+        elif home_pitcher_hand == 'lhp':
             player_df = player.get_rhp_stats()
         #else:
             #player_df = player.get_hall_stats()
@@ -56,16 +69,16 @@ home_9 = home_random_9[['Name', 'Position', 'weighted_runs_created_per_game']]
 away_9 = away_random_9[['Name', 'Position', 'weighted_runs_created_per_game']]
 
 # Print the matchup, organizing the data by weighted_runs_created_per_game
-print(home_pitcher, ' random lineup based on ', a_p_hand,  ' Handed pitcher:')
+print(home_name,' random lineup based on ', a_p_hand,  ' Handed pitcher:')
 print(home_9.head(9))
 home_er = round(home_random_9.weighted_runs_created_per_game.sum(), 2)
 print('Total Expected Runs: ', home_er)
-print(away_pitcher, ' random lineup based on ' , h_p_hand,  ' Handed pitcher:')
+print(away_name, ' random lineup based on ' , h_p_hand,  ' Handed pitcher:')
 print(away_9.head(9))
 away_er = round(away_random_9.weighted_runs_created_per_game.sum(), 2)
 print('Total Expected Runs: ', away_er)
 
-    #return home_er, away_er
+
 
 
 
