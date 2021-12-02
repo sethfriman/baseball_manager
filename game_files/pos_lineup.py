@@ -11,7 +11,6 @@ class Lineup(): #based only on batting stats
         self.roster = roster
         self.lineup = {}
         self.weighted_stats = weighted_stats
-        self.pitcher = pitcher
         self.pos = pos
 
     def pos_lists(self):
@@ -19,9 +18,6 @@ class Lineup(): #based only on batting stats
 
         # Stores all non-pitcher players
         non_pitchers = []
-
-        # Opens pitcher object
-        pitcher = self.pitcher.__dict__
 
         # Appends non-pitchers to non-pitchers list
         for x in self.roster:  # in self.weightedstats?
@@ -88,42 +84,42 @@ class Lineup(): #based only on batting stats
 
 
 # Call pos_lists and pos_dict for each position in home team
-hC = Lineup(home, home_weighted, away_pitcher, 'C')
+hC = Lineup(home, home_weighted, 'C')
 hC_pos_list = hC.pos_lists()
 home_C = hC.pos_dict(hC_pos_list)
 
-hB1 = Lineup(home, home_weighted, away_pitcher, '1B')
+hB1 = Lineup(home, home_weighted, '1B')
 hB1_pos_list = hB1.pos_lists()
 home_B1 = hB1.pos_dict(hB1_pos_list)
 
-hB2 = Lineup(home, home_weighted, away_pitcher, '2B')
+hB2 = Lineup(home, home_weighted, '2B')
 hB2_pos_list = hB2.pos_lists()
 home_B2 = hB2.pos_dict(hB2_pos_list)
 
-hB3 = Lineup(home, home_weighted, away_pitcher, '3B')
+hB3 = Lineup(home, home_weighted, '3B')
 hB3_pos_list = hB3.pos_lists()
 home_B3 = hB3.pos_dict(hB3_pos_list)
 
-hSS = Lineup(home, home_weighted, away_pitcher, 'SS')
+hSS = Lineup(home, home_weighted, 'SS')
 hSS_pos_list = hSS.pos_lists()
 home_SS = hSS.pos_dict(hSS_pos_list)
 
-hLF = Lineup(home, home_weighted, away_pitcher, 'LF')
+hLF = Lineup(home, home_weighted, 'LF')
 hLF_pos_list = hLF.pos_lists()
 
-hRF = Lineup(home, home_weighted, away_pitcher, 'RF')
+hRF = Lineup(home, home_weighted, 'RF')
 hRF_pos_list = hRF.pos_lists()
 
 home_LF = hLF.pos_dict(hLF_pos_list)
 home_RF = hRF.pos_dict(hRF_pos_list)
 LF_RF = hLF.if_LF_RF_empty(hLF_pos_list, hRF_pos_list)
 
-hCF = Lineup(home, home_weighted, away_pitcher, 'CF')
+hCF = Lineup(home, home_weighted, 'CF')
 hCF_pos_list = hCF.pos_lists()
 home_CF = hCF.pos_dict(hCF_pos_list)
 
 
-hDH = Lineup(home, home_weighted, away_pitcher, 'DH')
+hDH = Lineup(home, home_weighted, 'DH')
 hDH_pos_list = hDH.pos_lists()
 home_DH = hDH.pos_dict(hDH_pos_list)
 
@@ -144,41 +140,41 @@ total_wrpg = round(h_lineup_df['Weighted runs per game'].sum(), 2)
 print("Lineup's projected runs: ", total_wrpg)
 
 # Call pos_lists and pos_dict for each position in home team
-aC = Lineup(away, away_weighted, home_pitcher, 'C')
+aC = Lineup(away, away_weighted, 'C')
 aC_pos_list = aC.pos_lists()
 away_C = aC.pos_dict(aC_pos_list)
 
-aB1 = Lineup(away, away_weighted, home_pitcher, '1B')
+aB1 = Lineup(away, away_weighted, '1B')
 aB1_pos_list = aB1.pos_lists()
 away_B1 = aB1.pos_dict(aB1_pos_list)
 
-aB2 = Lineup(away, away_weighted, home_pitcher, '2B')
+aB2 = Lineup(away, away_weighted, '2B')
 aB2_pos_list = aB2.pos_lists()
 away_B2 = aB2.pos_dict(aB2_pos_list)
 
-aB3 = Lineup(away, away_weighted, home_pitcher, '3B')
+aB3 = Lineup(away, away_weighted, '3B')
 aB3_pos_list = aB3.pos_lists()
 away_B3 = aB3.pos_dict(aB3_pos_list)
 
-aSS = Lineup(away, away_weighted, home_pitcher, 'SS')
+aSS = Lineup(away, away_weighted, 'SS')
 aSS_pos_list = aSS.pos_lists()
 away_SS = aSS.pos_dict(aSS_pos_list)
 
-aLF = Lineup(away, away_weighted, home_pitcher, 'LF')
+aLF = Lineup(away, away_weighted, 'LF')
 aLF_pos_list = aLF.pos_lists()
 
-aCF = Lineup(away, away_weighted, home_pitcher, 'CF')
+aCF = Lineup(away, away_weighted, 'CF')
 aCF_pos_list = aCF.pos_lists()
 away_CF = aCF.pos_dict(aCF_pos_list)
 
-aRF = Lineup(away, away_weighted, home_pitcher, 'RF')
+aRF = Lineup(away, away_weighted, 'RF')
 aRF_pos_list = aRF.pos_lists()
 
 away_LF = aLF.pos_dict(aLF_pos_list)
 away_RF = aRF.pos_dict(aRF_pos_list)
 LF_RF = aLF.if_LF_RF_empty(aLF_pos_list, aRF_pos_list)
 
-aDH = Lineup(away, away_weighted, home_pitcher, 'DH')
+aDH = Lineup(away, away_weighted, 'DH')
 aDH_pos_list = aDH.pos_lists()
 away_DH = aDH.pos_dict(aDH_pos_list)
 
