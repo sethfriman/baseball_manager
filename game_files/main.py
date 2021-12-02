@@ -3,6 +3,8 @@ import random
 import matplotlib.pyplot as plt
 import pandas as pd
 import sys
+
+from random9_lineup import random9Lineup
 from top9_lineup import top9Lineup
 import seaborn as sns
 
@@ -13,6 +15,7 @@ from player_information.player import Player, Batter, Pitcher
 import data_cleaning_and_organization.dataclean as dc
 from data_cleaning_and_organization.gen_stats import gen_stat
 from results_visuals.player_comp import player_comp
+from results_visuals.lineup_compare import lineup_compare
 
 
 list_abbrv = ['ARI', 'ATL', 'BAL', 'BOS', 'CHW', 'CHC', 'CIN', 'CLE', 'COL', 'DET', 'HOU', 'KCR', 'LAA', 'LAD',
@@ -277,3 +280,15 @@ init_players = GameManager()
 # h_p_hand/a_p_hand: 'Left' or 'Right'
 # Unspecified values are chosen randomly
 home_weighted, away_weighted, home_name, away_name, h_p_hand, a_p_hand, home, away = genMatchup()
+
+results_df = pd.DataFrame(columns=['Lineup Type', 'Expected Runs', 'Location'])
+
+top9_h, top9_a = top9Lineup(home_weighted, away_weighted, h_p_hand, a_p_hand, home_name, away_name)
+results_df = results_df.append({'Lineup Type': 'Top9', 'Expected Runs': top9_h, 'Location': 'Home'}, ignore_index=True)
+results_df = results_df.append({'Lineup Type': 'Top9', 'Expected Runs': top9_a, 'Location': 'Away'}, ignore_index=True)
+
+ran9_h, ran9_a = random9Lineup(home_weighted, away_weighted, h_p_hand, a_p_hand, home_name, away_name)
+results_df = results_df.append({'Lineup Type': 'Rand9', 'Expected Runs': ran9_h, 'Location': 'Home'}, ignore_index=True)
+results_df = results_df.append({'Lineup Type': 'Rand9', 'Expected Runs': ran9_a, 'Location': 'Away'}, ignore_index=True)
+
+lineup_compare(results_df, h_p_hand, a_p_hand, home_name, away_name)
