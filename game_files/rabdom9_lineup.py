@@ -1,3 +1,6 @@
+
+#COULD BE MODIFIED A BIT FOR THE FINAL 
+
 import random
 
 import matplotlib.pyplot as plt
