@@ -88,8 +88,9 @@ def lineup_df(lineup_dict):
     pd.set_option("display.max_rows", None, "display.max_columns", None)
     df = df.drop(['combo'], 1)
     total_wrpg = round(df['Weighted runs per game'].sum(), 2)
+    print(df)
     print("Lineup's projected runs: ", total_wrpg)
-    return df
+    return total_wrpg
 
 # Call pos_lists and pos_dict for each position in home team
 hC = Lineup(home, home_weighted, 'C')
@@ -137,7 +138,6 @@ home_lineup = {**home_C, **home_B1, **home_B2, **home_B3, **home_SS, **home_LF, 
 print('Home Lineup: ', home_lineup)
 
 home_lineup_df = lineup_df(home_lineup)
-print(home_lineup_df)
 
 # Call pos_lists and pos_dict for each position in home team
 aC = Lineup(away, away_weighted, 'C')
@@ -183,7 +183,6 @@ away_lineup = {**away_C, **away_B1, **away_B2, **away_B3, **away_SS, **away_LF, 
 print('Away Lineup: ', away_lineup)
 
 away_lineup_df = lineup_df(away_lineup)
-print(away_lineup_df)
 
 
 def get_pos_count(B1, B2, B3, LF, RF, CF, SS, C, DH, team):
