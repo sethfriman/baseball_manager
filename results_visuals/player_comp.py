@@ -41,7 +41,7 @@ def player_comp(players_list, p_hand='Total', start_date='2021-01-01'):
 
     # Visualize the data and save the resulting plot
     fig, ax = plt.subplots()
-    fig.set_size_inches(30, 15)
+    #fig.set_size_inches(30, 15)
     dates = [datetime.datetime.strptime(ts, "%Y-%m-%d") for ts in filtered_df.Date.values]
     filtered_df['Date'] = dates
     dates.sort()
@@ -52,6 +52,6 @@ def player_comp(players_list, p_hand='Total', start_date='2021-01-01'):
     date_set = [datetime.datetime.strftime(ts, "%Y-%m-%d") for ts in date_set]
     filtered_df['Date'] = dates
     sns.lineplot(x='Date', y='Runs Created', hue='NameTm', data=filtered_df, ax=ax)
-    ax.set_xticklabels(date_set, rotation=45)
+    ax.set_xticklabels(date_set, rotation=45, horizontalalignment='right')
     ax.set_title('Runs Created Comparison Chart')
     fig.savefig('../results_visuals/player_comp.png')

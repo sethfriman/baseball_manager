@@ -1,10 +1,10 @@
 # LINEUPS and RESULTS
-
 from matplotlib import pyplot as plt
 import seaborn as sns
 
 
 def lineup_compare(results_df, h_p_hand, a_p_hand, home_name, away_name):
+    """Creates a visual of all lineups to be able to compare them against each other for expected runs"""
 
     if h_p_hand == 'Left':
         home_pitcher_hand = 'lhp'

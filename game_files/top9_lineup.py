@@ -1,9 +1,7 @@
-import random
-#from main import *
-#from player_information.player import *
-
 
 def top9Lineup(home_df, away_df, home_a, away_a, home, away):
+    """Creates a Lineup from the top 9 batters overall on a team based on Weighted Runs Created"""
+
     home_best_9 = home_df.sort_values('weighted_runs_created_per_game', ascending=False)[:9].reset_index(
         drop=True)
     away_best_9 = away_df.sort_values('weighted_runs_created_per_game', ascending=False)[:9].reset_index(
