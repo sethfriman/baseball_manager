@@ -1,12 +1,9 @@
 import random
-
-import matplotlib.pyplot as plt
-import pandas as pd
 import sys
 
+from pos_lineup import *
 from random9_lineup import random9Lineup
 from top9_lineup import top9Lineup
-import seaborn as sns
 
 sys.path.append('../')
 from player_information.roster import Roster
@@ -225,6 +222,7 @@ class GameManager:
             roster_obj.add_player(pitcher_obj)
 
     def matchup(self, teams, home, away):
+        """ Randomly selects two MLB teams from list of teams without repeating """
         # .sample() does not allow for there to be repeating elements chosen
         if (home is None) & (away is None):
             matchups = random.sample(teams, 2)
@@ -257,6 +255,7 @@ class GameManager:
         return home_team, away_team
 
     def rosters(self, home, away):
+        """ Returns rosters of matchup teams as lists of player objects """
 
         hi = list_abbrv.index(home)
         ai = list_abbrv.index(away)
@@ -264,10 +263,6 @@ class GameManager:
         home_roster = list_roster_objects[hi].get_current_roster()
         away_roster = list_roster_objects[ai].get_current_roster()
         return home_roster, away_roster
-
-
-# if __name__ == "__main__":
-    # will change this based on dataframes, but keep as list for now
 
 # Initial Visualizations using raw dataframes
 player_comp(['Anthony Rizzo', 'Kyle Seager', 'Willson Contreras'], p_hand='Right', start_date='2021-09-01')
@@ -286,6 +281,20 @@ results_df = pd.DataFrame(columns=['Lineup Type', 'Expected Runs', 'Location'])
 top9_h, top9_a = top9Lineup(home_weighted, away_weighted, h_p_hand, a_p_hand, home_name, away_name)
 results_df = results_df.append({'Lineup Type': 'Top9', 'Expected Runs': top9_h, 'Location': 'Home'}, ignore_index=True)
 results_df = results_df.append({'Lineup Type': 'Top9', 'Expected Runs': top9_a, 'Location': 'Away'}, ignore_index=True)
+
+pos_h, pos_a = make_pos_lineup(home, away, home_weighted, away_weighted, home_name, away_name)
+
+home_poslineup_df, home_weight = lineup_df(pos_h)
+away_poslineup_df, away_weight = lineup_df(pos_a)
+print('Home Positional Lineup: ')
+print(home_poslineup_df)
+print("Lineup's projected runs: ", home_weight)
+print('Away Positional Lineup: ')
+print(away_poslineup_df)
+print("Lineup's projected runs: ", away_weight)
+
+results_df = results_df.append({'Lineup Type': 'Positional', 'Expected Runs': home_weight, 'Location': 'Home'}, ignore_index=True)
+results_df = results_df.append({'Lineup Type': 'Positional', 'Expected Runs': away_weight, 'Location': 'Away'}, ignore_index=True)
 
 ran9_h, ran9_a = random9Lineup(home_weighted, away_weighted, h_p_hand, a_p_hand, home_name, away_name)
 results_df = results_df.append({'Lineup Type': 'Rand9', 'Expected Runs': ran9_h, 'Location': 'Home'}, ignore_index=True)
