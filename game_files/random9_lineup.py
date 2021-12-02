@@ -71,14 +71,9 @@ away_9 = away_random_9[['Name', 'Position', 'weighted_runs_created_per_game']]
 # Print the matchup, organizing the data by weighted_runs_created_per_game
 print(home_name,' random lineup based on ', a_p_hand,  ' Handed pitcher:')
 print(home_9.head(9))
-home_er = round(home_random_9.weighted_runs_created_per_game.sum(), 2)
+home_er = round(home_9.weighted_runs_created_per_game.sum(), 2)
 print('Total Expected Runs: ', home_er)
 print(away_name, ' random lineup based on ' , h_p_hand,  ' Handed pitcher:')
 print(away_9.head(9))
-away_er = round(away_random_9.weighted_runs_created_per_game.sum(), 2)
+away_er = round(away_9.weighted_runs_created_per_game.sum(), 2)
 print('Total Expected Runs: ', away_er)
-
-
-
-
-
