@@ -158,8 +158,7 @@ class GameManager:
             correct_player = possible_players[possible_players['Team'] == player_team]
 
             if correct_player.empty:
-                player_position = 'Unknown'
-                player_status = 'Unknown'
+                continue
             else:
                 player_position = correct_player.iloc[0]['Position']
                 player_status = correct_player.iloc[0]['Status']
@@ -184,8 +183,7 @@ class GameManager:
             pitcher_hand = 'Left'
 
             if correct_pitcher.empty:
-                pitcher_position = 'Unknown'
-                pitcher_status = 'Unknown'
+                continue
             else:
                 pitcher_position = correct_player.iloc[0]['Position']
                 pitcher_status = correct_player.iloc[0]['Status']
@@ -209,8 +207,7 @@ class GameManager:
             pitcher_hand = 'Right'
 
             if correct_pitcher.empty:
-                pitcher_position = 'Unknown'
-                pitcher_status = 'Unknown'
+                continue
             else:
                 pitcher_position = correct_player.iloc[0]['Position']
                 pitcher_status = correct_player.iloc[0]['Status']
