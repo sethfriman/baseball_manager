@@ -6,7 +6,7 @@ from player_information.player import *
 
 class Lineup(): #based only on batting stats
 
-    def __init__(self, roster, weighted_stats, pitcher, pos):
+    def __init__(self, roster, weighted_stats, pos):
         """ Constructor for Lineup """
         self.roster = roster
         self.lineup = {}
