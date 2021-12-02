@@ -1,4 +1,4 @@
-#THIS MIGHT STILL NEED TO BE MODIFIED A BIT 
+#THIS MIGHT STILL NEED TO BE MODIFIED A BIT BECAUSE SOMETIMES IT WILL OUTPUT DUPLICATES 
 import random
 from game_files.main import *
 from player_information.player import *
