@@ -118,7 +118,7 @@ def genMatchup(home=None, away=None, h_p_hand=None, a_p_hand=None):
     home_weighted = gen_stat(home_weighted, p_hand=away_pitcher_hand)
     away_weighted = gen_stat(away_weighted, p_hand=home_pitcher_hand)
 
-    return home_weighted, away_weighted, home_name, away_name, h_p_hand, a_p_hand
+    return home_weighted, away_weighted, home_name, away_name, h_p_hand, a_p_hand, home, away
 
 
 class GameManager:
@@ -276,14 +276,14 @@ init_players = GameManager()
 # home/away: abbreviations for teams
 # h_p_hand/a_p_hand: 'Left' or 'Right'
 # Unspecified values are chosen randomly
-home_weighted, away_weighted, home, away, h_p_hand, a_p_hand = genMatchup()
+home_weighted, away_weighted, home_name, away_name, h_p_hand, a_p_hand, home, away = genMatchup()
 
 # LINEUPS and RESULTS
 results_df = pd.DataFrame(columns=['Lineup Type', 'Expected Runs', 'Location'])
 
 top9_h, top9_a = top9Lineup(home_weighted, away_weighted,
                             h_p_hand, a_p_hand,
-                            home, away)
+                            home_name, away_name)
 if h_p_hand == 'Left':
     home_pitcher_hand = 'lhp'
 else:
@@ -300,5 +300,5 @@ results_df = results_df.append({'Lineup Type': 'Top9', 'Expected Runs': top9_a, 
 fig, ax = plt.subplots()
 sns.barplot(x='Lineup Type', y='Expected Runs', data=results_df, hue='Location', ax=ax)
 ax.set_title('Expected Runs Lineup Comparison Chart')
-fig.savefig('../results_visuals/' + away + '_' + away_pitcher_hand + '_at_' +
-            home + '_' + away_pitcher_hand + '.png')
+fig.savefig('../results_visuals/' + away_name + '_' + away_pitcher_hand + '_at_' +
+            home_name + '_' + away_pitcher_hand + '.png')
