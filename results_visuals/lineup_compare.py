@@ -19,5 +19,6 @@ def lineup_compare(results_df, h_p_hand, a_p_hand, home_name, away_name):
     fig, ax = plt.subplots()
     sns.barplot(x='Lineup Type', y='Expected Runs', data=results_df, hue='Location', ax=ax)
     ax.set_title('Expected Runs Lineup Comparison Chart')
+    plt.show()
     fig.savefig('../results_visuals/' + away_name + '_' + away_pitcher_hand + '_at_' +
                 home_name + '_' + home_pitcher_hand + '.png')
