@@ -191,3 +191,26 @@ a_lineup_df = a_lineup_df.drop(['combo'], 1)
 print(a_lineup_df)
 total_wrpg = round(a_lineup_df['Weighted runs per game'].sum(), 2)
 print("Lineup's projected runs: ", total_wrpg)
+
+
+def get_pos_count(B1, B2, B3, LF, RF, CF, SS, C, DH, team):
+    """
+    Returns bar chart showing player position count for the inputted team.
+    X-axis is positions.
+    Y-axis is player count.
+    """
+    positions = ['1B', '2B', '3B', 'LF', 'RF', 'CF', 'SS', 'C', 'DH']
+    occurrences = [len(B1), len(B2), len(B3), len(LF), len(RF), len(CF), len(SS), len(C), len(DH)]
+
+    plt.bar(positions, occurrences)
+    plt.title('Player Position Count for ' + team)
+    plt.xlabel('Positions')
+    plt.ylabel('Player Count')
+    y_ticks = np.arange(0, 6, 1)
+    plt.yticks(y_ticks)
+    plt.show()
+
+
+
+get_pos_count(hB1_pos_list, hB2_pos_list, hB3_pos_list, hLF_pos_list, hCF_pos_list, hRF_pos_list, hSS_pos_list, hC_pos_list, hDH_pos_list, matchup_tuple[0])
+get_pos_count(aB1_pos_list, aB2_pos_list, aB3_pos_list, aLF_pos_list, aCF_pos_list, aRF_pos_list, aSS_pos_list, aC_pos_list, aDH_pos_list, matchup_tuple[1])
