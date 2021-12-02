@@ -1,5 +1,3 @@
-import random
-import pandas as pd
 from game_files.main import *
 from player_information.player import *
 
@@ -81,7 +79,17 @@ class Lineup(): #based only on batting stats
                             self.lineup['RF'] = (LF_list[i][0], best_stat[0])
         else:
             pass
-
+        
+def lineup_df(lineup_dict):
+    df = pd.DataFrame(lineup_dict.items(), columns=['Position', 'combo'])
+    pd.DataFrame(df['combo'].tolist(), index=df.index)
+    df[['Name', 'Weighted runs per game']] = pd.DataFrame(df['combo'].tolist(),
+                                                                       index=df.index)
+    pd.set_option("display.max_rows", None, "display.max_columns", None)
+    df = df.drop(['combo'], 1)
+    total_wrpg = round(df['Weighted runs per game'].sum(), 2)
+    print("Lineup's projected runs: ", total_wrpg)
+    return df
 
 # Call pos_lists and pos_dict for each position in home team
 hC = Lineup(home, home_weighted, 'C')
@@ -128,16 +136,8 @@ home_DH = hDH.pos_dict(hDH_pos_list)
 home_lineup = {**home_C, **home_B1, **home_B2, **home_B3, **home_SS, **home_LF, **home_CF, **home_RF, **home_DH}
 print('Home Lineup: ', home_lineup)
 
-
-# Converts home lineup dictionary to a pandas dataframe
-h_lineup_df = pd.DataFrame(home_lineup.items(), columns=['Position', 'combo'])
-pd.DataFrame(h_lineup_df['combo'].tolist(), index=h_lineup_df.index)
-h_lineup_df[['Name', 'Weighted runs per game']] = pd.DataFrame(h_lineup_df['combo'].tolist(), index=h_lineup_df.index)
-pd.set_option("display.max_rows", None, "display.max_columns", None)
-h_lineup_df = h_lineup_df.drop(['combo'], 1)
-print(h_lineup_df)
-total_wrpg = round(h_lineup_df['Weighted runs per game'].sum(), 2)
-print("Lineup's projected runs: ", total_wrpg)
+home_lineup_df = lineup_df(home_lineup)
+print(home_lineup_df)
 
 # Call pos_lists and pos_dict for each position in home team
 aC = Lineup(away, away_weighted, 'C')
@@ -182,15 +182,8 @@ away_DH = aDH.pos_dict(aDH_pos_list)
 away_lineup = {**away_C, **away_B1, **away_B2, **away_B3, **away_SS, **away_LF, **away_CF, **away_RF, **away_DH}
 print('Away Lineup: ', away_lineup)
 
-# Converts home lineup dictionary to a pandas dataframe
-a_lineup_df = pd.DataFrame(away_lineup.items(), columns=['Position', 'combo'])
-pd.DataFrame(a_lineup_df['combo'].tolist(), index=a_lineup_df.index)
-a_lineup_df[['Name', 'Weighted runs per game']] = pd.DataFrame(a_lineup_df['combo'].tolist(), index=a_lineup_df.index)
-pd.set_option("display.max_rows", None, "display.max_columns", None)
-a_lineup_df = a_lineup_df.drop(['combo'], 1)
-print(a_lineup_df)
-total_wrpg = round(a_lineup_df['Weighted runs per game'].sum(), 2)
-print("Lineup's projected runs: ", total_wrpg)
+away_lineup_df = lineup_df(away_lineup)
+print(away_lineup_df)
 
 
 def get_pos_count(B1, B2, B3, LF, RF, CF, SS, C, DH, team):
