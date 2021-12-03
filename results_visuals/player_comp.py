@@ -1,4 +1,6 @@
 import datetime
+import sys
+
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
@@ -39,19 +41,43 @@ def player_comp(players_list, p_hand='Total', start_date='2021-01-01'):
                                     filtered_df['HBP'] + filtered_df['SH'] +
                                     filtered_df['SF']))
 
-    # Visualize the data and save the resulting plot
-    fig, ax = plt.subplots()
-    #fig.set_size_inches(30, 15)
     dates = [datetime.datetime.strptime(ts, "%Y-%m-%d") for ts in filtered_df.Date.values]
     filtered_df['Date'] = dates
     dates.sort()
-    date_set = list(set(dates))
-    date_set.sort()
     filtered_df = filtered_df.sort_values('Date')
     dates = [datetime.datetime.strftime(ts, "%Y-%m-%d") for ts in dates]
-    date_set = [datetime.datetime.strftime(ts, "%Y-%m-%d") for ts in date_set]
     filtered_df['Date'] = dates
-    sns.lineplot(x='Date', y='Runs Created', hue='NameTm', data=filtered_df, ax=ax)
-    ax.set_xticklabels(date_set, rotation=45, horizontalalignment='right')
-    ax.set_title('Runs Created Comparison Chart')
+    filtered_df = filtered_df.reset_index(drop=True)
+
+    name_tms = list(set(filtered_df.NameTm.values))
+    avg_df = pd.DataFrame()
+    for player in name_tms:
+        temp_df = filtered_df[filtered_df['NameTm'] == player]
+        temp_df['Rolling Runs Created'] = temp_df['Runs Created'].rolling(7).mean()
+        temp_df = temp_df[~temp_df['Rolling Runs Created'].isnull()].reset_index(drop=True)
+        temp_df = temp_df.reset_index()
+        temp_df['index'] = temp_df['index'] + 1
+        avg_df = avg_df.append(temp_df, ignore_index=True)
+
+
+    date_set = list(set(avg_df.Date.values))
+    date_set.sort()
+
+    print(avg_df)
+
+    # Visualize the data and save the resulting plot
+    fig, ax = plt.subplots()
+    fig.tight_layout(pad=10)
+    #fig.set_size_inches(30, 15)
+    sns.lineplot(x='Date', y='Rolling Runs Created', hue='NameTm', data=avg_df, ax=ax)
+    new_dates = []
+    for i in range(len(date_set)):
+        if i % 2 == 0:
+            new_dates.append(date_set[i])
+        else:
+            new_dates.append('')
+    ax.set_xticklabels(new_dates, rotation=45, horizontalalignment='right')
+    ax.set_title('7 Day Rolling Avg Runs Created Comparison Chart', fontsize=9)
+    ax.legend(bbox_to_anchor=(1.42, 1), fontsize=6)
     fig.savefig('../results_visuals/player_comp.png')
+    sys.exit(0)
