@@ -26,27 +26,27 @@ plt.figure(figsize=(12, 5))
 sns.lineplot(x=range(len(before_injury)),
              y='H',
              data=before_injury,
-             label='Hits per Game (Before Injury)',
+             label='Hits per Game (Before Injury: 2020 Season)',
              linestyle='dashed',
              alpha=0.3)
 sns.lineplot(x=range(len(after_injury)),
              y='H',
              data=after_injury,
-             label='Hits per Game (After Injury)',
+             label='Hits per Game (After Injury: 2021 Season)',
              linestyle='dashed',
              alpha=0.3)
 # plot using rolling average
 sns.lineplot(x=range(len(before_injury)),
              y='7game_rolling_avg',
              data=before_injury,
-             label='Rolling Average Hits per Game (Before Injury)',
+             label='Rolling Average Hits per Game (Before Injury: 2020 Season)',
              linewidth=2)
 sns.lineplot(x=range(len(after_injury)),
              y='7game_rolling_avg',
              data=after_injury,
-             label='Rolling Average Hits per Game (After Injury)',
+             label='Rolling Average Hits per Game (After Injury: 2021 Season)',
              linewidth=2)
-plt.xlabel('Number of Games Played')
+plt.xlabel('Number of Games Played in Season')
 plt.ylabel('Number of Hits per Game')
 plt.title('Post-Injury Batting Evaluation: David Bote')
 plt.show()
