@@ -34,7 +34,7 @@ list_team = ["Diamondbacks", "Braves", "Orioles", "Red Sox", "White Sox", "Cubs"
 list_roster_objects = []
 
 
-def genMatchup(home=None, away=None, h_p_hand=None, a_p_hand=None):
+def genMatchup(home=None, away=None, h_p_hand=None, a_p_hand=None, before_date='2021-10-03'):
     matchup_tuple = init_players.matchup(list_abbrv, home, away)
     rosters = init_players.rosters(matchup_tuple[0], matchup_tuple[1])
 
@@ -105,10 +105,10 @@ def genMatchup(home=None, away=None, h_p_hand=None, a_p_hand=None):
                  'HBP', 'SF', 'SH', 'GDP', 'SB', 'CS']
 
     # Weight the batting stats based on recency of games
-    home_weighted = dc.weight_stats_df(home_df, stat_cols)
+    home_weighted = dc.weight_stats_df(home_df, stat_cols, before_date=before_date)
     home_weighted['Tm'] = matchup_tuple[0]
 
-    away_weighted = dc.weight_stats_df(away_df, stat_cols)
+    away_weighted = dc.weight_stats_df(away_df, stat_cols, before_date=before_date)
     away_weighted['Tm'] = matchup_tuple[1]
 
     # Filter batters with less than 10 weighted at bats to reduce '1-game-wonders' type of results
@@ -274,6 +274,9 @@ init_players = GameManager()
 # h_p_hand/a_p_hand: 'Left' or 'Right'
 # Unspecified values are chosen randomly
 home_weighted, away_weighted, home_name, away_name, h_p_hand, a_p_hand, home, away = genMatchup()
+
+#home_weighted, away_weighted, home_name, away_name, h_p_hand, a_p_hand, home, away = genMatchup('MIA', 'TOR', 'Left', 'Right')
+#home_weighted, away_weighted, home_name, away_name, h_p_hand, a_p_hand, home, away = genMatchup(home='OAK', a_p_hand='Right', before_date='2021-09-01')
 
 # Start Accumulating Results
 results_df = pd.DataFrame(columns=['Lineup Type', 'Expected Runs', 'Location'])
