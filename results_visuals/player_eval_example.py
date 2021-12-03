@@ -1,28 +1,52 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import warnings
+import seaborn as sns
 warnings.filterwarnings("ignore")
 
-
-def player_stat_eval(data, column, player, stat):
+def player_stat_eval(data, column, player, stat, start_date, end_date):
     """ Pulls Specific Stats for a Player from the desired Data Source """
-    injured_df = data[data[column] == player]
-    stat_list = list(injured_df[stat])
-    return stat_list
+    data['7game_rolling_avg'] = data.H.rolling(7).mean()
+    specific_df = data[data[column] == player]
+    specific_df = specific_df[specific_df['Date'] > start_date]
+    specific_df = specific_df[specific_df['Date'] < end_date]
+    final_df = specific_df[[stat, '7game_rolling_avg']]
+    return final_df
 
-# demo scenario
+
+# Demo Example: Injury Report
 player_df = pd.read_csv('../data_directory/FanGraphs_total.csv')
-demo1 = injury_batting_eval(player_df, 'Name', 'Salvador Perez', 'AB')
-demo2 = injury_batting_eval(player_df, 'Name', 'Salvador Perez', 'HR')
-demo3 = injury_batting_eval(player_df, 'Name', 'Salvador Perez', 'H')
 
-fig = plt.subplots(figsize=(12, 6))
-plt.plot(demo1, color='blue', label='Number of At Bats in Game', zorder=2)
-plt.plot(demo2, 'k*', label='Number of Home Runs in Game', zorder=3)
-plt.plot(demo3, color='red', label='Number of Hits in Game')
-plt.title('Post-Injury Batting Evaluation')
-plt.xlabel('Number of Played Game Since Return to Play')
-plt.ylabel('Count of Statistic')
-plt.legend(bbox_to_anchor=(1.05, 1.0), loc='upper left')
-plt.tight_layout()
+before_injury = player_stat_eval(player_df, 'Name', 'David Bote', 'H', '2020-07-27', '2020-09-27')
+after_injury = player_stat_eval(player_df, 'Name', 'David Bote', 'H', '2021-04-01', '2021-09-30')
+
+sns.set_palette("bright")
+plt.figure(figsize=(12, 5))
+
+sns.lineplot(x=range(len(before_injury)),
+             y='H',
+             data=before_injury,
+             label='Hits per Game (Before Injury)',
+             linestyle='dashed',
+             alpha=0.3)
+sns.lineplot(x=range(len(after_injury)),
+             y='H',
+             data=after_injury,
+             label='Hits per Game (After Injury)',
+             linestyle='dashed',
+             alpha=0.3)
+# plot using rolling average
+sns.lineplot(x=range(len(before_injury)),
+             y='7game_rolling_avg',
+             data=before_injury,
+             label='Rolling Average Hits per Game (Before Injury)',
+             linewidth=2)
+sns.lineplot(x=range(len(after_injury)),
+             y='7game_rolling_avg',
+             data=after_injury,
+             label='Rolling Average Hits per Game (After Injury)',
+             linewidth=2)
+plt.xlabel('Number of Games Played')
+plt.ylabel('Number of Hits per Game')
+plt.title('Post-Injury Batting Evaluation: David Bote')
 plt.show()
