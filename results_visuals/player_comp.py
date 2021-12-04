@@ -80,4 +80,3 @@ def player_comp(players_list, p_hand='Total', start_date='2021-01-01'):
     ax.set_title('7 Day Rolling Avg Runs Created Comparison Chart', fontsize=9)
     ax.legend(bbox_to_anchor=(1.42, 1), fontsize=6)
     fig.savefig('../results_visuals/player_comp.png')
-    sys.exit(0)
