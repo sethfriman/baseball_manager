@@ -9,6 +9,10 @@ abv = ['ARI', 'ATL', 'BAL', 'BOS', 'CHW', 'CHC', 'CIN', 'CLE', 'COL', 'DET', 'HO
                       'MIA', 'MIL', 'MIN', 'NYY', 'NYM', 'OAK', 'PHI', 'PIT', 'SDP', 'SFG', 'SEA', 'STL', 'TBR', 'TEX',
                       'TOR', 'WSN']
 
+list_league = ['NL', 'NL', 'AL', 'AL', 'AL', 'NL', 'NL', 'AL', 'NL', 'AL', 'AL', 'AL', 'AL', 'NL', 'NL', 'NL', 'NL', 'AL',
+               'NL', 'AL', 'NL', 'NL', 'NL', 'NL', 'AL', 'NL', 'AL', 'NL', 'AL', 'NL']
+
+
 
 # reading necessary data into dataframes
 standings_df = pd.read_csv('../data_directory/standings_2021.csv')
@@ -36,7 +40,7 @@ stats_2021['Runs Created'] = (((stats_2021['H'] + stats_2021['BB'] -
                                     stats_2021['SF']))
 
 
-def get_wins_vs_rc(list_teams):
+def get_wins_vs_rc(list_teams, list_leagues):
     list_wins = []
     list_rc = []
     df = pd.DataFrame()
@@ -48,16 +52,15 @@ def get_wins_vs_rc(list_teams):
         total_rc = team_stats_df['Runs Created'].sum()
         list_wins.append(team_wins)
         list_rc.append(total_rc)
-    dict_wins = {'color': abv, 'wins': list_wins, 'rc': list_rc}
+    dict_wins = {'color': abv, 'wins': list_wins, 'rc': list_rc, 'style': list_leagues}
     df = pd.DataFrame(dict_wins)
-    sns.lmplot(x='rc', y='wins', data=df, hue='color', fit_reg=False)
+    sns.scatterplot(x='rc', y='wins', data=df, hue='color', style='style', legend='full')
+    plt.legend(bbox_to_anchor=(1.01, 1),
+               borderaxespad=0)
     plt.title("Total Team Runs Created Vs. Wins 2021")
     plt.xlabel("Team Runs Created in 2021")
     plt.ylabel("Wins")
     plt.show()
 
-get_wins_vs_rc(abv)
 
-
-
-
+get_wins_vs_rc(abv, list_league)
