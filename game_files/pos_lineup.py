@@ -57,29 +57,14 @@ class PositionLineup():
         """ Inserts left or right fielder into lineup if more than one is available and the 
         roster does not have a player for one of these positions """
         
-        RF_stats = []
-        LF_stats = []
-        for p, stat in LF_list:
-            LF_stats.append(stat)
-        for p, stat in RF_list:
-            RF_stats.append(stat)
-
-        if bool(self.lineup) == False:
+        if not bool(self.lineup):
             if LF_list == 0 or RF_list == 0:
-                if len(RF_list) > 1:
-                    best_stat = max(RF_stats)
-                    RF_stats.remove(best_stat)
-                    sec_best = max(RF_stats)
-                    for i, s in enumerate(RF_stats):
-                        if sec_best == RF_stats[i]:
-                            self.lineup['LF'] = (RF_list[i][0], best_stat[0])
-                if len(LF_list) > 1:
-                    best_stat = max(LF_stats)
-                    LF_stats.remove(best_stat)
-                    sec_best = max(LF_stats)
-                    for i, s in enumerate(LF_stats):
-                        if sec_best == LF_stats[i]:
-                            self.lineup['RF'] = (LF_list[i][0], best_stat[0])
+                if len(RF_list) > 0:
+                    RF_list = sorted(RF_list, key=lambda t: t[1])
+                    self.lineup['LF'] = RF_list[-2]
+                if len(LF_list) > 0:
+                    LF_list = sorted(LF_list, key=lambda t: t[1])
+                    self.lineup['RF'] = LF_list[-2]
         else:
             pass
         
