@@ -1,11 +1,12 @@
-from player_information.roster import Roster
+import sys
 import pandas as pd
+import random
+sys.path.append('../')
+from player_information.roster import Roster
 from player_information.player import Player, Batter, Pitcher
 from player_information.roster import get_pitcher
 import data_cleaning_and_organization.dataclean as dc
 from data_cleaning_and_organization.gen_stats import gen_stat
-
-import random
 
 
 
