@@ -63,12 +63,9 @@ def player_comp(players_list, p_hand='Total', start_date='2021-01-01'):
     date_set = list(set(avg_df.Date.values))
     date_set.sort()
 
-    print(avg_df)
-
     # Visualize the data and save the resulting plot
     fig, ax = plt.subplots()
     fig.tight_layout(pad=10)
-    #fig.set_size_inches(30, 15)
     sns.lineplot(x='Date', y='Rolling Runs Created', hue='NameTm', data=avg_df, ax=ax)
     new_dates = []
     for i in range(len(date_set)):

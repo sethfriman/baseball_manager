@@ -1,10 +1,10 @@
 
 import sys
 
-from game_files.pos_lineup import *
-from game_files.random9_lineup import random9Lineup
-from game_files.top9_lineup import top9Lineup
-from game_files.gen_matchup import *
+from pos_lineup import *
+from random9_lineup import random9Lineup
+from top9_lineup import top9Lineup
+from gen_matchup import *
 
 sys.path.append('../')
 # from player_information.roster import Roster
