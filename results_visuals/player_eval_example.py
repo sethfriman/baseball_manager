@@ -17,8 +17,8 @@ def player_stat_eval(data, column, player, stat, start_date, end_date):
 # Demo Example: Injury Report
 player_df = pd.read_csv('../data_directory/FanGraphs_total.csv')
 
-before_injury = player_stat_eval(player_df, 'Name', 'David Bote', 'H', '2020-07-27', '2020-09-27')
-after_injury = player_stat_eval(player_df, 'Name', 'David Bote', 'H', '2021-04-01', '2021-09-30')
+before_injury = player_stat_eval(player_df, 'Name', 'David Bote', 'H', '2020-07-27', '2021-05-29')
+after_injury = player_stat_eval(player_df, 'Name', 'David Bote', 'H', '2021-07-01', '2021-09-30')
 
 sns.set_palette("bright")
 plt.figure(figsize=(12, 5))
@@ -39,12 +39,12 @@ sns.lineplot(x=range(len(after_injury)),
 sns.lineplot(x=range(len(before_injury)),
              y='10game_rolling_avg',
              data=before_injury,
-             label='Rolling Average Hits per Game (Before Injury: 2020 Season)',
+             label='Rolling Average Hits per Game (Before Injury: 2020 + 2021)',
              linewidth=2)
 sns.lineplot(x=range(len(after_injury)),
              y='10game_rolling_avg',
              data=after_injury,
-             label='Rolling Average Hits per Game (After Injury: 2021 Season)',
+             label='Rolling Average Hits per Game (After Injury: 2021)',
              linewidth=2)
 plt.xlabel('Number of Games Played in Season')
 plt.ylabel('Number of Hits per Game')
