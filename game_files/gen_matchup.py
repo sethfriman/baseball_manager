@@ -30,7 +30,11 @@ list_roster_objects = []
 
 def genMatchup(home=None, away=None, h_p_hand=None, a_p_hand=None, before_date='2021-10-03'):
     """This function takes in optional parameters for the home/away teams an home/away pitcher hands and generates
-       a matchup based on the conditions. Returns a weighted dataframe of stats for each of the teams in the matchup."""
+       a matchup based on the conditions.
+       Returns: home/away aggregate weighted dataframe for each player on each team
+                home/away team names
+                home/away pitcher hands
+                home/away roster objects"""
 
     matchup_tuple = init_players.matchup(list_abbrv, home, away)
     rosters = init_players.rosters(matchup_tuple[0], matchup_tuple[1])
