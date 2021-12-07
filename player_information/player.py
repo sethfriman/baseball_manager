@@ -1,10 +1,6 @@
 # Player class representing player
 import pandas as pd
 
-# IMPORTANT:
-# NEED TO ADD IN POSITION FOR ALL AND HANDEDNESS (FOR PITCHER)
-
-
 class Player:
 
     def __init__(self, name: str, team_name: str, position: str):
