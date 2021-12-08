@@ -1,11 +1,9 @@
-
 from game_files.gen_matchup import *
 from game_files.pos_lineup import *
 import pandas as pd
 import itertools
 from collections import Counter
 import matplotlib.pyplot as plt
-import numpy as np
 import seaborn as sns
 
 
@@ -143,44 +141,51 @@ lineup_comp_graph('BOS')
 
 # Magnifies into single game - Shows comparison on a smaller scale
 
-# Convert BOS 2021 schedule to pandas df
-rs_sched = pd.read_csv('../data_directory/redsox_schedule.csv')
+def lineup_comp_single(data, date, team):
+    """ Returns lineup of 9 players who actually played in specified game. """
+    batters = data[(data['Date'] == date)]
+    batters = batters[(batters['Tm'] == team)]
+    team_acc = list(batters['Name'])
+
+    # Removed subs as our data does not account for them
+    # List of players in actual BOS lineup for specified game
+    acc_nosubs = team_acc[:9]
+
+    return acc_nosubs
+
+def lineup_comp_graph_single(home_abv, away_abv, home_hand, away_hand, date, actual):
+    """ Outputs bar graph showing the lineup accuracy for a specified game based on teams, pitcher arms, and game date. """
+
+    # Call genMatchup for this game
+    home_weighted, away_weighted, home_name, away_name, home_p_hand, away_p_hand, home, away = genMatchup(home_abv, away_abv, home_hand, away_hand, date,)
+
+    # Run teams through positional lineup generator
+    pos_home, pos_away = make_pos_lineup(home, away, home_weighted, away_weighted, home_name, away_name)
+
+    # Create lineup dataframe for BOS
+    team_poslineup_df, team_weight_num = lineup_df(pos_home)
+
+    # List of players in predicted BOS lineup for specified game
+    pred = list(team_poslineup_df['Name'])
+    score = single_accuracy(pred, actual)
+    perfect = 100
+
+    # Example output of individual game accuracy as a bar chart
+    fig, ax = plt.subplots()
+    xaxis = ['Real Lineup', 'Generated Lineup']
+    yaxis = []
+    yaxis.append(perfect)
+    yaxis.append(score)
+    ax.bar(xaxis, yaxis)
+    plt.title('Comparison of Real vs Generated Lineup for BOS (BOS vs NYY 7/18/21)')
+    plt.xlabel('Lineup Type')
+    plt.ylabel('Accuracy (%)')
+    fig.savefig(f'../results_visuals/BOS_single_game_accuracy.png')
+    plt.show()
 
 # Convert all batters data to pandas df and filters down to BOS vs NYY 7/18/21 game
 all_batters = pd.read_csv('../data_directory/FanGraphs_total.csv')
-batters = all_batters[(all_batters['Date'] == "2021-07-18")]
-batters = batters[(batters['Tm'] == "BOS")]
-sox_acc = list(batters['Name'])
-
-# Removed subs as our data does not account for them
-# List of players in actual BOS lineup for specified game
-sox_acc_nosubs = sox_acc[:9]
-
-# Call genMatchup for this game
-sox_weighted, nyy_weighted, sox_name, nyy_name, sox_p_hand, nyy_p_hand, sox, nyy = genMatchup('BOS', 'NYY', 'Left', 'Right', "2021-07-18")
-
-# Run BOS and NYY through positional lineup generator
-pos_sox, pos_nyy = make_pos_lineup(sox, nyy, sox_weighted, nyy_weighted, sox_name, nyy_name)
-
-# Create lineup dataframe for BOS
-sox_poslineup_df, sox_weight_num = lineup_df(pos_sox)
-
-# List of players in predicted BOS lineup for specified game
-sox_pred = list(sox_poslineup_df['Name'])
 
 # Example output of individual game accuracy as a bar chart
-score = single_accuracy(sox_pred, sox_acc_nosubs)
-perfect = 100
-
-fig, ax = plt.subplots()
-
-xaxis = ['Real Lineup', 'Generated Lineup']
-yaxis = []
-yaxis.append(perfect)
-yaxis.append(score)
-ax.bar(xaxis, yaxis)
-plt.title('Comparison of Real vs Generated Lineup for BOS (BOS vs NYY 7/18/21)')
-plt.xlabel('Lineup Type')
-plt.ylabel('Accuracy (%)')
-plt.show()
-fig.savefig(f'../results_visuals/BOS_single_game_accuracy.png')
+actual_lineup = lineup_comp_single(all_batters, "2021-07-18", "BOS")
+lineup_comp_graph_single('BOS', 'NYY', 'Left', 'Right', '2021-07-18', actual_lineup)
