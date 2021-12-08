@@ -258,7 +258,7 @@ def get_salary_vs_rc(list_teams):
     # use regression model to predict y
     y_polynomial = reg_polynomial.predict(x_plot_model)
 
-    colormap = np.array(['r', 'g', 'b'])
+    #colormap = np.array(['r', 'g', 'b'])
 
     # define labels for x and y
     x_plot_label = 'Runs Created'
