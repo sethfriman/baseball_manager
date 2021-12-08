@@ -58,7 +58,7 @@ def get_salary_vs_rc(list_teams):
         total_rc = team_stats_df['Runs Created'].sum()
         list_salary.append(team_salary)
         list_rc.append(total_rc)
-    dict_wins = {'color': abv, 'Payroll': team_salary, 'rc': list_rc}
+    dict_wins = {'ABV': abv, 'Payroll': team_salary, 'rc': list_rc}
     df = pd.DataFrame(dict_wins)
     print(df)
     print('Correlation =', stats.pearsonr(df.Payroll, df.rc))
@@ -258,14 +258,24 @@ def get_salary_vs_rc(list_teams):
     # use regression model to predict y
     y_polynomial = reg_polynomial.predict(x_plot_model)
 
+    colormap = np.array(['r', 'g', 'b'])
+
     # define labels for x and y
     x_plot_label = 'Runs Created'
     y_plot_label = 'Total Team Salary (hundred million USD)'
 
     title = 'Total Team Runs Created Vs. Team Salary 2021'
 
+    colors = {'ARI': 'black', 'ATL': 'dimgray', 'BAL': 'maroon', 'BOS': 'tomato', 'CHW':'saddlebrown', 'CHC': 'darkorange', 'CIN':'gold',
+              'CLE': 'gold', 'COL': 'darkkhaki', 'DET': 'darkolivegreen', 'HOU':'lawngreen', 'KCR': 'forestgreen', 'LAA':'darkslategrey', 'LAD': 'cyan',
+              'MIA': 'deepskyblue', 'MIL': 'dodgerblue', 'MIN': 'crimson','NYY': 'yellow', 'NYM': 'brown', 'OAK': 'rebeccapurple',
+              'PHI': 'indigo', 'PIT':'magenta', 'SDP':'midnightblue', 'SFG':'darkgoldenrod', 'SEA':'rosybrown','STL': 'peru', 'TBR': 'lime', 'TEX': 'royalblue',
+              'TOR': 'indianred', 'WSN':'palevioletred'}
+
+
+
     # create scatter plot of x and y (area and price)
-    plt.scatter(x, y, alpha=.15, label='Salary vs Runs Created', color='black')
+    plt.scatter(x, y, alpha=.15, label='Team', c=df['ABV'].apply(lambda x: colors[x]))
 
     # linear model plot
     plt.plot(x_plot_model, y_linear, color='green', label=f'linear (r2 = {r2_linear_score:.2f})', marker="o", linewidth=0.5,  markersize=1.5)
@@ -275,6 +285,12 @@ def get_salary_vs_rc(list_teams):
 
     # quadratic model plot
     plt.plot(x_plot_model, y_polynomial, color='blue', label=f'quadratic (r2 = {r2_poly_score:.2f})')
+
+    plt.annotate("LAD", (1289.688857, 174661524))
+    plt.annotate("ATL", (1279.613000, 106964415.0))
+    plt.annotate("HOU", (1310.290000, 147127725.0))
+
+
 
     # creating a dictionary
     font = {'size': 10}
@@ -289,8 +305,6 @@ def get_salary_vs_rc(list_teams):
     plt.legend()
     print('Correlation =', stats.pearsonr(df.Payroll, df.rc))
     # size of plot
-    plt.gcf().set_size_inches(9,9)
+    plt.gcf().set_size_inches(5,5)
     plt.show()
 get_salary_vs_rc(abv)
-
-
