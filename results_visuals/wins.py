@@ -41,6 +41,9 @@ stats_2021['Runs Created'] = (((stats_2021['H'] + stats_2021['BB'] -
 
 
 def get_wins_vs_rc(list_teams, list_leagues):
+    """
+    returns: scatter plot depicting team's runs created in 2021 vs wins, along with their league
+    """
     list_wins = []
     list_rc = []
     df = pd.DataFrame()
