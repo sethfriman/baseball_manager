@@ -126,16 +126,16 @@ def lineup_comp_graph(team_abbrev):
 # Comparison of all actual vs predicted positional lineups for BOS 2021 season games
 
 # All actual lineups
-#all_team_acc = team_acc(rs_sched, 'BOS')
+all_team_acc = team_acc(rs_sched, 'BOS')
 
 # All predicted lineups
-#all_team_preds = team_pred(rs_sched, 'BOS')
+all_team_preds = team_pred(rs_sched, 'BOS')
 
 # Calculates all accuracy percentages for all lineup comparisons
-#all_acc_percentages = multi_accuracy(all_team_preds, all_team_acc)
+all_acc_percentages = multi_accuracy(all_team_preds, all_team_acc)
 
 # Outputs line graph showcasing accuracy percentages over entire season
-#lineup_comp_graph('BOS')
+lineup_comp_graph('BOS')
 
 
 
