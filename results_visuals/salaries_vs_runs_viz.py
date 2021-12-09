@@ -46,6 +46,8 @@ stats_2021['Runs Created'] = (((stats_2021['H'] + stats_2021['BB'] -
 
 
 def get_salary_vs_rc(list_teams):
+  """ Sums up every team's runs created; prints and plots linear, quadratic, and exponential regressions models to depict a relationship between runs created and 
+  team salary """
     list_salary = []
     list_rc = []
     df = pd.DataFrame()
