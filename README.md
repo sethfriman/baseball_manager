@@ -1,5 +1,7 @@
 # Baseball Player Management System
 
+## Authors: Seth Friman, Sophie Lefebvre, Grace Michael, Jason Stitt, Tara Sawhney
+
 ## What is this?
 This project is a warehouse for baseball player management that may be used by a manager or General Manager to inform
 decisions related to creating a roster and deciding lineups for a matchup. 
